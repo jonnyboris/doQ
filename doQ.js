@@ -3,10 +3,9 @@
 		return doQ.fn.init(data);
 	}
 	
-	function createNumArr(arr, prop) {
+	function createNumArr(arr, props) {
 		var qArr = [],
-			len = arr.length,
-			props = prop.split(".");
+			len = arr.length;
 
 		for(var i=0; i<len; i +=1){
 			var val = getObjProp(arr[i], props);
@@ -35,31 +34,52 @@
 		return arr;
 	}
 	
+	function getObjProp(obj, props) {
+		var len = props.length,
+			result = obj;
+
+		for(var i=0; i<len; i+=1) {
+			result = result[props[i]];
+		}
+
+		return result;
+	}
+	
+	 function isNumber(n) {
+		return !isNaN(parseFloat(n)) && isFinite(n);
+	}
+	
 	function closestSearch(arr, find) {
-	var low = 0, high = arr.length - 1,
-        i, comparison;
-    while (low <= high) {
-        i = Math.floor((low + high) / 2);
-        if (arr[i] < find) { low = i + 1; continue; };
-        if (arr[i] > find) { high = i - 1; continue; };
-        return i;
-    }
-    return i;
-}
+		var low = 0, high = arr.length - 1,
+			i, comparison;
+		while (low <= high) {
+			i = Math.floor((low + high) / 2);
+			if (arr[i] < find) { low = i + 1; continue; };
+			if (arr[i] > find) { high = i - 1; continue; };
+			return i;
+		}
+		return i;
+	}
 	
 	doQ.fn = doQ.prototype = {
 		v: 0.1,
 		props: undefined,
 		data: undefined,
+		originalData: undefined,
 		
 		init: function(data) {
 			this.data = data;
+			this.originalData = data;
 			return this;
 		},
 		
-		prop: function(p) {
-			this.prop = p.split(".");
+		path: function(p) {
+			this.props = p.split(".");
 			return this;
+		},
+		
+		result: function() {
+			return this.data;
 		},
 		
 		greaterThan: function(val) {
@@ -76,9 +96,11 @@
 			lowest = closestSearch(qArr, val);
 
 			if(qArr[lowest] < val || qArr[lowest] === val) {
-				return this.data.slice(qArr.lastIndexOf(qArr[lowest]) + 1);
+				this.data = this.data.slice(qArr.lastIndexOf(qArr[lowest]) + 1);
+				return this;
 			} else {
-				return this.data.slice(qArr.indexOf(qArr[lowest]));
+				this.data = this.data.slice(qArr.indexOf(qArr[lowest]));
+				return this;
 			}
 		},
 		
@@ -110,9 +132,11 @@
 			lowest = closestSearch(qArr, val);
 
 			if(qArr[lowest] > val || qArr[lowest] === val) {
-				return this.data.slice(0, qArr.indexOf(qArr[lowest]));
+				this.data =this.data.slice(0, qArr.indexOf(qArr[lowest]));
+				return this;
 			} else {
-				return this.data.slice(0, qArr.lastIndexOf(qArr[lowest]) + 1);
+				this.data = this.data.slice(0, qArr.lastIndexOf(qArr[lowest]) + 1);
+				return this;
 			}
 		},
 		

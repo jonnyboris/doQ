@@ -1,8 +1,28 @@
 (function(window) {
 	var doQ = function(data) {
 			return doQ.fn.init(data);
+		},
+		opToFunction = {
+			"<": function(operand) {
+				this.lessThan(operand);
+			},
+			
+			">": function(operand) {
+				this.greaterThan(operand);
+			},
+			
+			"<=": function(operand) {
+				this.lessThanEqualTo(operand);
+			},
+			
+			">=": function(operand) {
+				this.greaterThanEqualTo(operand);
+			},
+			
+			"=": function(operand) {
+				this.equalTo(operand);
+			}
 		}; 
-		
 	
 	function createNumArr(arr, props) {
 		var qArr = [],
@@ -42,7 +62,11 @@
 		for(var i=0; i<len; i+=1) {
 			result = result[props[i]];
 		}
-
+		
+		if(isNumber(result)) {
+			result = parseFloat(result);
+		}
+		
 		return result;
 	}
 	
@@ -162,7 +186,7 @@
 			} else {
 				qArr = this.data;
 			}
-			
+			qArr = sortArr(qArr);
 			this.data = this.data.slice(qArr.indexOf(val), qArr.lastIndexOf(val) + 1);
 			return this;
 		},
@@ -170,28 +194,7 @@
 		query: function(queryString) {
 			var queries = queryString.split("and"),
 				len = queries.length,
-				re = /<=|>=|=|<|>/,
-				opToFunction = {
-					"<": function(operand) {
-						this.lessThan(operand);
-					},
-					
-					">": function(operand) {
-						this.greaterThan(operand);
-					},
-					
-					"<=": function(operand) {
-						this.lessThanEqualTo(operand);
-					},
-					
-					">=": function(operand) {
-						this.greaterThanEqualTo(operand);
-					},
-					
-					"=": function(operand) {
-						this.equalTo(operand);
-					}
-				};
+				re = /<=|>=|=|<|>/;
 
 			for(var i=0; i < len; i+= 1) {
 				var query = queries[i],

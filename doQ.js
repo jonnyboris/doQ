@@ -1,7 +1,8 @@
 (function(window) {
 	var doQ = function(data) {
-		return doQ.fn.init(data);
-	}
+			return doQ.fn.init(data);
+		}; 
+		
 	
 	function createNumArr(arr, props) {
 		var qArr = [],
@@ -10,7 +11,7 @@
 		for(var i=0; i<len; i +=1){
 			var val = getObjProp(arr[i], props);
 			if(isNumber(val)) {
-				qArr.push(val);
+				qArr.push(parseFloat(val));
 			} else {
 				throw new TypeError();
 			}
@@ -153,7 +154,58 @@
 		},
 		
 		equalTo: function(val) {
+			var qArr;
 			
+			if(this.props != undefined) {
+				qArr = createNumArr(this.data, this.props);
+				this.data = sortObjArr(this.data, this.props);
+			} else {
+				qArr = this.data;
+			}
+			
+			this.data = this.data.slice(qArr.indexOf(val), qArr.lastIndexOf(val) + 1);
+			return this;
+		},
+		
+		query: function(queryString) {
+			var queries = queryString.split("and"),
+				len = queries.length,
+				re = /<=|>=|=|<|>/,
+				opToFunction = {
+					"<": function(operand) {
+						this.lessThan(operand);
+					},
+					
+					">": function(operand) {
+						this.greaterThan(operand);
+					},
+					
+					"<=": function(operand) {
+						this.lessThanEqualTo(operand);
+					},
+					
+					">=": function(operand) {
+						this.greaterThanEqualTo(operand);
+					},
+					
+					"=": function(operand) {
+						this.equalTo(operand);
+					}
+				};
+
+			for(var i=0; i < len; i+= 1) {
+				var query = queries[i],
+					operator = re.exec(query),
+					operands = query.split(operator);
+				
+				if(operands[0] !== "") {
+					this.path(operands[0].trim());
+				}
+				
+				opToFunction[operator].call(this, parseFloat(operands[1]));
+			}
+				
+			return this.result();
 		}
 	}	
 	window.doQ = doQ;

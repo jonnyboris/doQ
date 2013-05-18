@@ -26,7 +26,7 @@ doQ(arr).query("age = 21");
 
 
 doQ(arr).query("age = 21 and height > 1.2");
-// = [{"name": "alice", "age": 21, "height": 1.2}, {"name": "bob", "age": 21, "height": 1.7}]
+// = [{"name": "bob", "age": 21, "height": 1.7}]
 ```
 
 This program is free software: you can redistribute it and/or modify
